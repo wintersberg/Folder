@@ -18,6 +18,27 @@ class Rect:
         )
 
     def getCenter(self):
-        x_center = (self.right - self.left) / 2
-        y_center = (self.top - self.bottom) / 2
-        return (x_center, y_center)
+        right = (self.right - self.left) / 2
+        left = right
+        top = (self.top - self.bottom) / 2
+        bottom = top
+        return Rect(right, left, top, bottom)
+
+    def is_inside(self, rect):
+        if (
+            (self.left > rect.left)
+            and (self.right < rect.right)
+            and (self.top < rect.top)
+            and (self.bottom > rect.bottom)
+        ):
+            return True
+        else:
+            return False
+
+    def coords_to_string(self):
+        xs = [self.left, self.bottom,
+            self.left, self.top,
+            self.right, self.top,
+            self.right, self.bottom,]
+        s = ' '.join(str(x) for x in xs)
+        return s

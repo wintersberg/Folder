@@ -32,6 +32,10 @@ print("Borders: ", left_border, bottom_border, right_border, top_border)
 border_rect = Rect(top_border, bottom_border, right_border, left_border)
 
 
+adj_rects = utils.filter_by_border(adj_rects, border_rect)
+print("============== RECTANGLES AFTER FILTER ==================")
+converter.showRects(adj_rects)
+
 im = Image.new("RGB", (width, height), (255, 255, 255))
 draw = ImageDraw.Draw(im, "RGBA")
 canvas.draw_layer(adj_rects, "NA", draw)
@@ -44,12 +48,19 @@ canvas.draw_layer(adj_rects, "SP", draw)
 
 canvas.draw_layer(adj_rects, "SN", draw)
 
+canvas.draw_layer(adj_rects, "M2", draw)
+
 canvas.draw_border(border_rect, draw)
 
-p_transistors, n_transistors = utils.get_transistors(adj_rects)
+p_transistors, n_transistors, p_channels, n_channels = utils.get_transistors(adj_rects)
 
 print("============== P TRANSISTORS ==================")
 for i in p_transistors:
+    i.printCoords()
+
+print()
+print("============== P CHANNELS ==================")
+for i in p_channels:
     i.printCoords()
 
 print()
@@ -57,13 +68,46 @@ print("============== N TRANSISTORS ==================")
 for i in n_transistors:
     i.printCoords()
 
-# canvas.draw_n_transistors(n_transistors, draw)
+print()
+print("============== N CHANNELS ==================")
+for i in n_channels:
+    i.printCoords()
 
-# canvas.draw_p_transistors(p_transistors, draw)
+# square = utils.arrays_union_square(p_transistors, p_channels)
+# print()
+# print("============== P TRANSISTORS + P CHANNELS ==================")
+# print(square / 1000, "k")
 
-canvas.draw_transistors(p_transistors, "P", draw)
+print(len(adj_rects["M2"]))
+for a in adj_rects["M2"]:
+    a.printCoords()
 
-canvas.draw_transistors(n_transistors, "N", draw)
+m2_square, inters_count, extraslen, intersections = utils.array_union_square(adj_rects["M2"])
+print("m2_square = ", m2_square/1000, "k, inters_count = ", inters_count, "extraslen = ", extraslen,)
+for i in intersections:
+    i.printCoords()
+print()
+
+# temp = [] 
+# it = 1
+# for x in intersections: 
+#     print("current x = ", it)
+#     x.printCoords()
+#     it += 1
+#     if x not in temp: 
+#         temp.append(x) 
+# intersections2 = temp.copy()
+
+# print()
+# # intersections2 = list(set(intersections))
+# for i in intersections2:
+#     i.printCoords()
+
+canvas.draw_rects(p_transistors, "P", draw)
+canvas.draw_rects(p_channels, "SP", draw)
+
+canvas.draw_rects(n_transistors, "N", draw)
+canvas.draw_rects(n_channels, "SN", draw)
 
 
 im.rotate(180).transpose(Image.Transpose.FLIP_LEFT_RIGHT).show()

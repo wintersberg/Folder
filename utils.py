@@ -1,4 +1,5 @@
 from rect import Rect
+import converter
 
 
 def get_canvas_size(rects):
@@ -95,21 +96,81 @@ def intersecton_with_layer(element, layer_array):
 def get_transistors(rects):
     n_transistors = []
     p_transistors = []
-    for i in rects["NA"]:
-        key, intersection = intersecton_with_layer(i, rects["SP"])
-        if intersecton_with_layer(i, rects["SP"]):
-            p_transistors.append(i)
-        elif intersecton_with_layer(i, rects["SN"]):
-            n_transistors.append(i)
-        else:
-            continue
-    return p_transistors, n_transistors
-
-
-def get_channels(rects):
     n_channels = []
     p_channels = []
+    for i in rects["NA"]:
+        key, intersection = intersecton_with_layer(i, rects["SP"])
+        if key:
+            p_transistors.append(i)
+            p_channels.append(intersection)
+            continue
+        key, intersection = intersecton_with_layer(i, rects["SN"])
+        if key:
+            n_transistors.append(i)
+            n_channels.append(intersection)
+            continue
+        else:
+            continue
+    return p_transistors, n_transistors, p_channels, n_channels
 
 
-def rects_union_area(rect1, rect2):
-    print()
+def rects_union_square(rect1, rect2):
+    square = rect1.square + rect2.square
+    intersection = rects_intersection(rect1, rect2)
+    if intersection:
+        square -= intersection.square
+    return square
+
+
+def arrays_union_square(array1, array2):
+    square = 0
+    for a in array1:
+        square += a.square
+        for b in array2:
+            square += b.square
+            intersection = rects_intersection(a, b)
+            if intersection:
+                square -= intersection.square
+    return square
+
+
+def array_union_square(array):
+    square = 0
+    count = 0
+    intersections = []
+    extrastr = []
+    massiv = []
+    for a in array:
+        for b in array:
+            if a != b:
+                intersection = rects_intersection(a, b)
+                if intersection:
+                    count += 1
+                    intersections.append(intersection)
+    for i in intersections:
+        extrastr.append(i.coords_to_string())
+
+    extras = list(dict.fromkeys(extrastr))
+
+    for i in extras:
+            left, right, top, bottom = converter.getPointsFromString(i)
+            massiv.append(Rect(right, left, top, bottom))
+
+    extraslen = len(massiv)
+    for a in array:
+        square += a.square
+    for b in massiv:
+        square -= b.square
+    return square, count, extraslen, massiv
+
+
+def filter_by_border(rects, border_rect):
+    filtered_rects = {}
+    for i in rects:
+        filtered_rects[i] = []
+        for j in rects[i]:
+            if (border_rect.is_inside(j)) or (rects_intersection(border_rect, j) == False):
+                continue
+            else:
+                filtered_rects[i].append(Rect(j.right, j.left, j.top, j.bottom))
+    return filtered_rects

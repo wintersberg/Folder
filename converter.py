@@ -67,12 +67,17 @@ def getRectsFromPoints(result):
 
 def showRects(classes):
     for a in classes:
+        counter = 1
         for i in classes[a]:
             print(
                 a,
+                "[",
+                counter,
+                "]",
                 ": ",
                 (i.left, i.bottom),
                 (i.left, i.top),
                 (i.right, i.top),
                 (i.right, i.bottom),
             )
+            counter += 1

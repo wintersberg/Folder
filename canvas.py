@@ -5,6 +5,7 @@ colors = {
     "SI": (0, 255, 110),
     "SN": (173, 255, 47),
     "SP": (127, 255, 212),
+    "M2": (0, 191, 255),
 }
 
 
@@ -23,11 +24,11 @@ def draw_layer(rects, layer, draw):
         )
 
 
-def draw_transistors(transistors, color, draw):
+def draw_rects(transistors, color, draw):
     for a in transistors:
         draw.rectangle(
             (a.left, a.bottom, a.right, a.top),
             fill=(colors[color] + (128,)),
-            outline=(255, 0, 0),
+            outline=(colors[color]),
             width=7,
         )
