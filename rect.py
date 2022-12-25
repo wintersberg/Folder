@@ -5,6 +5,7 @@ class Rect:
         self.left = left
         self.top = top
         self.bottom = bottom
+        self.string = self.coords_to_string()
 
     def printCoords(self):
         print(
@@ -36,9 +37,15 @@ class Rect:
             return False
 
     def coords_to_string(self):
-        xs = [self.left, self.bottom,
-            self.left, self.top,
-            self.right, self.top,
-            self.right, self.bottom,]
-        s = ' '.join(str(x) for x in xs)
+        xs = [
+            self.left,
+            self.bottom,
+            self.left,
+            self.top,
+            self.right,
+            self.top,
+            self.right,
+            self.bottom,
+        ]
+        s = " ".join(str(x) for x in xs)
         return s
