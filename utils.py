@@ -85,16 +85,18 @@ def rects_intersection(rect1, rect2):
 def intersecton_with_layer(element, layer_array):
     key = False
     for i in layer_array:
-        if rects_intersection(element, i):
+        intersection = rects_intersection(element, i)
+        if intersection:
             key = True
             break
-    return key
+    return key, intersection
 
 
 def get_transistors(rects):
     n_transistors = []
     p_transistors = []
     for i in rects["NA"]:
+        key, intersection = intersecton_with_layer(i, rects["SP"])
         if intersecton_with_layer(i, rects["SP"]):
             p_transistors.append(i)
         elif intersecton_with_layer(i, rects["SN"]):
