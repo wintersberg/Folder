@@ -1,13 +1,13 @@
-def read():
+def read(path):
     result = {}  # dict
-    with open("data/invertor2.cif", "r") as file:
+    with open(path, "r") as file:
         # with open("K6.cif", "r") as file:
         for line in file:
             if line.find("L ") != -1:
                 result[line[line.find("L ") + 2 : -2]] = []
 
     tmp = ""
-    with open("data/invertor2.cif", "r") as file:
+    with open(path, "r") as file:
         for line in file:
             if (tmp != "") and ((line.find("P ") != -1) or (line.find("W ") != -1)):
                 result[tmp].append(line[2:-2])

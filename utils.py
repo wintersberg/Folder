@@ -1,7 +1,67 @@
 from rect import Rect
 
 
-def rectsIntersection(rect1, rect2):
+def get_canvas_size(rects):
+
+    min_left = 10000000
+    min_bottom = 10000000
+    max_right = -1000000
+    max_top = -1000000
+
+    for a in rects:
+        for b in rects[a]:
+            if b.left < min_left:
+                min_left = b.left
+            if b.bottom < min_bottom:
+                min_bottom = b.bottom
+            if b.right > max_right:
+                max_right = b.right
+            if b.top > max_top:
+                max_top = b.top
+
+    width = max_right - min_left
+    height = max_top - min_bottom
+
+    return min_left, min_bottom, max_right, max_top, width, height
+
+
+def adjust_coordinates(rects, min_left, min_bottom):
+
+    adj_rects = rects.copy()
+
+    for a in rects:
+        adj_rects[a] = []
+        for b in rects[a]:
+            adj_rects[a].append(
+                Rect(
+                    b.right - min_left,
+                    b.left - min_left,
+                    b.top - min_bottom,
+                    b.bottom - min_bottom,
+                )
+            )
+
+    return adj_rects
+
+
+def get_borders(rects):
+    min_left = 10000000
+    min_bottom = 10000000
+    max_right = -1000000
+    max_top = -1000000
+    for b in rects["B1"]:
+        if b.left < min_left:
+            min_left = b.left
+        if b.bottom < min_bottom:
+            min_bottom = b.bottom
+        if b.right > max_right:
+            max_right = b.right
+        if b.top > max_top:
+            max_top = b.top
+    return min_left, min_bottom, max_right, max_top
+
+
+def rects_intersection(rect1, rect2):
     if rect1.right < rect2.left:
         return False
     if rect1.left > rect2.right:
@@ -25,59 +85,29 @@ def rectsIntersection(rect1, rect2):
 def intersecton_with_layer(element, layer_array):
     key = False
     for i in layer_array:
-        if rectsIntersection(element, i):
+        if rects_intersection(element, i):
             key = True
             break
     return key
 
 
-def getTransistors(rects, p_transistors, n_transistors):
+def get_transistors(rects):
+    n_transistors = []
+    p_transistors = []
     for i in rects["NA"]:
-
-        # is_contact_window = False
-
-        # for k in rects["CNA"]:
-        #     if rectsIntersection(i, k):
-        #         if rectsIntersection(i, k).square >= 0.5 * i.square:
-        #             is_contact_window = True
-        #             break
-
-        # for k in rects["CPA"]:
-        #     if rectsIntersection(i, k):
-        #         if rectsIntersection(i, k).square >= 0.5 * i.square:
-        #             is_contact_window = True
-        #             break
-
-        # if intersecton_with_layer(i, rects["CPE"]) or intersecton_with_layer(
-        #     i, rects["CNE"]
-        # ):
-        #     continue
-
-        # for k in rects["CPE"]:
-        #     if rectsIntersection(i, k):
-        #         is_contact_window = True
-        #         break
-
-        # for k in rects["CNE"]:
-        #     if rectsIntersection(i, k):
-        #         is_contact_window = True
-        #         break
-
-        # if is_contact_window:
-        #     continue
-
-        # for j in rects["P"]:
-        #     # print((i.left, i.bottom), (i.left, i.top), (i.right, i.top), (i.right, i.bottom))
-        #     # print((j.left, j.bottom), (j.left, j.top), (j.right, j.top), (j.right, j.bottom))
-        #     # print(converter.rectsIntersection(i,j))
-        #     # print()
-        #     if rectsIntersection(i, j):
-        #         is_p_transistor = True
-
-        # if it is a P transistor
         if intersecton_with_layer(i, rects["SP"]):
             p_transistors.append(i)
         elif intersecton_with_layer(i, rects["SN"]):
             n_transistors.append(i)
         else:
             continue
+    return p_transistors, n_transistors
+
+
+def get_channels(rects):
+    n_channels = []
+    p_channels = []
+
+
+def rects_union_area(rect1, rect2):
+    print()
