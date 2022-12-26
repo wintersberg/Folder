@@ -216,7 +216,7 @@ def get_all_squares(elements_dict, rects, width, height):
         width, height, elements_dict["BORDER_RECT"], "all_trans", elements_dict["P_TRANSISTORS"], elements_dict["N_TRANSISTORS"]
     )
 
-    square_of_all_channels = square_of_p_channels = arrays_union_square(
+    square_of_all_channels = arrays_union_square(
         width, height, elements_dict["BORDER_RECT"], "all_channels", elements_dict["P_CHANNELS"], elements_dict["N_CHANNELS"]
     )
 
@@ -255,8 +255,8 @@ def get_all_squares(elements_dict, rects, width, height):
     square_of_blanks = square_of_borders - square_of_scheme
 
     squares_dict = {
-        "n_trans": [square_of_n_trans, round(square_of_n_trans / square_of_borders, 2) * 100],
-        "p_trans": [square_of_p_trans, round(square_of_n_trans / square_of_borders, 2) * 100],
+        "n_trans": [square_of_n_trans, round(square_of_n_trans / square_of_borders * 100, 2)],
+        "p_trans": [square_of_p_trans, round(square_of_p_trans / square_of_borders * 100, 2)],
         "all_trans": [square_of_all_trans, round(square_of_all_trans / square_of_borders * 100, 2)],
         "n_channels": [square_of_n_channels, round(square_of_n_channels / square_of_borders * 100, 2)],
         "p_channels": [square_of_p_channels, round(square_of_p_channels / square_of_borders * 100, 2)],
