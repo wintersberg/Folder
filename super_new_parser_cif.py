@@ -3,40 +3,46 @@ from rect import Rect
 import converter
 import utils
 import canvas
+from PIL import Image, ImageDraw
+
+# ======================= ПО НАЖАТИЮ КНОПКИ "РАССЧИТАТЬ СХЕМУ" ======================
 
 # read arrays from file
 result = reader.read("data/invertor2.cif")
 
-# print("============== RESULT DICT ==================")
-# reader.showResults(result)
-
 # conversion into rectangles
 rects = converter.getRectsFromPoints(result)
 
-# print("============== RECTANGLES ==================")
-# converter.showRects(rects)
-
 min_left, min_bottom, max_right, max_top, width, height = utils.get_canvas_size(rects)
-# print("Canvas size: ", min_left, min_bottom, max_right, max_top, width, height)
 
-adj_rects, width, height = utils.adjust_coordinates(rects, width, height, min_left, min_bottom)
+adj_rects, width, height = utils.adjust_coordinates(rects, width, height, min_left, min_bottom, 5)
 
-# укропская херня, надо указывать аргументы для создания Rect в неправильном порядке
 left_border, bottom_border, right_border, top_border = utils.get_borders(adj_rects)
-# print("Borders: ", left_border, bottom_border, right_border, top_border)
-# хуета
-# border_rect = Rect(right_border, left_border, top_border, bottom_border)
 border_rect = Rect(top_border, bottom_border, right_border, left_border)
 
-
 adj_rects = utils.filter_by_border(adj_rects, border_rect)
-# print("============== RECTANGLES AFTER FILTER ==================")
-# converter.showRects(adj_rects)
 
-from PIL import Image, ImageDraw
+# расчет всех нужных элементов схемы
+elements_dict = utils.get_all_elements(adj_rects, border_rect)
 
-# print("Image size: ", width, height)
+utils.print_all_elements(elements_dict)
 
+# расчет площадей (здесь параллельно создаются промежуточные картинки, которые сохраняются в папку images)
+squares_dict = utils.get_all_squares(elements_dict, adj_rects, width, height)
+
+utils.print_squares(squares_dict)
+
+# пока всё это считается, в центральной части окна крутится гифка
+# когда все рассчиталось, в центральной части окна появляется инфа о схеме, где можно нажать кнопку "Показать на картинке",
+# при нажатии на которую будет вызываться функция, соответствующая выбранному элементу из выпадающего списка, например:
+utils.show_picture("all_metal")
+
+# ======================= ПО НАЖАТИЮ КНОПКИ "НАРИСОВАТЬ КАРТИНКУ" ======================
+
+im = Image.new("RGB", (width, height), (255, 255, 255))
+draw = ImageDraw.Draw(im, "RGBA")
+
+# собираем левые чекбоксы
 layers_keys_dict = {
     "NA": True,
     "P": True,
@@ -56,14 +62,10 @@ layers_keys_dict = {
     "CW": False,
 }
 
-
-im = Image.new("RGB", (width, height), (255, 255, 255))
-draw = ImageDraw.Draw(im, "RGBA")
-
-# функция рисования контуров слоёв (принимает словарь Bool с названиями слоев)
+# функция рисования контуров слоёв
 canvas.draw_frame(layers_keys_dict, adj_rects, draw)
 
-
+# собираем правые чекбоксы
 elements_keys_dict = {
     "SI_CONNECTIONS": True,
     "P_TRANSISTORS": True,
@@ -75,33 +77,12 @@ elements_keys_dict = {
     "BORDER_RECT": True,
 }
 
-
-elements_dict = utils.get_all_elements(adj_rects, border_rect)
-
-utils.print_all_elements(elements_dict)
-
-squares_dict = utils.get_all_squares(elements_dict, adj_rects, width, height)
-
-utils.print_squares(squares_dict)
-
-#########################################
-
-
+# формирование итоговой цветной картинки
 canvas.draw_chosen_elements(elements_keys_dict, elements_dict, adj_rects, border_rect, draw)
 
+im = im.rotate(180).transpose(Image.Transpose.FLIP_LEFT_RIGHT)
 
-# canvas.draw_si_connections(adj_rects, n_channels, p_channels, draw)
+im.save("images/final.jpg", quality=95)
 
-# canvas.draw_rects(p_transistors, "P", 127, draw)
-# canvas.draw_rects(p_channels, "SP", 127, draw)
-
-# canvas.draw_rects(n_transistors, "N", 127, draw)
-# canvas.draw_rects(n_channels, "SN", 127, draw)
-
-# canvas.draw_rects(m1_metal, "M1", 127, draw)
-# canvas.draw_rects(m2_metal, "M2", 127, draw)
-
-# canvas.draw_rects(si_connections, "SI", 127, draw)
-
-
-im.rotate(180).transpose(Image.Transpose.FLIP_LEFT_RIGHT).show()
+# вывод финальной картиночки
+utils.show_picture("final")

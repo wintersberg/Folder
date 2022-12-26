@@ -24,7 +24,7 @@ def getPointsFromString(i):
     top = 0
     bottom = 0
 
-    if x1 < x2:  # x1 lefter
+    if x1 < x2:
         left = x1
         right = x2
     elif x2 < x1:
@@ -37,7 +37,7 @@ def getPointsFromString(i):
         left = x1
         right = x3
 
-    if y1 < y2:  # y1 bottomer
+    if y1 < y2:
         bottom = y1
         top = y2
     elif y2 < y1:
