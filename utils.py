@@ -170,6 +170,59 @@ def si_connections_square(width, height, border_rect, rects, n_channels, p_chann
     return count
 
 
+def useful_si_square(width, height, border_rect, rects, n_transistors, p_transistors):
+    im = Image.new("RGB", (width, height), (255, 255, 255))
+    draw = ImageDraw.Draw(im, "RGB")
+    canvas.fill_rects(rects["SI"], (0, 0, 0), draw)
+    canvas.fill_rects(rects["SP"], (0, 0, 0), draw)
+    canvas.fill_rects(rects["SN"], (0, 0, 0), draw)
+    canvas.fill_rects(n_transistors, (255, 255, 255), draw)
+    canvas.fill_rects(p_transistors, (255, 255, 255), draw)
+    count = 0
+    for pixel in im.getdata():
+        if pixel == (0, 0, 0):
+            count += 1
+    canvas.draw_border(border_rect, draw)
+    im.rotate(180).transpose(Image.Transpose.FLIP_LEFT_RIGHT).save("images/usefil_si.jpg", quality=95)
+    return count
+
+
+def useful_legirovanie_square(width, height, border_rect, n_channels, p_channels, n_transistors, p_transistors):
+    im = Image.new("RGB", (width, height), (255, 255, 255))
+    draw = ImageDraw.Draw(im, "RGB")
+    canvas.fill_rects(n_transistors, (0, 0, 0), draw)
+    canvas.fill_rects(p_transistors, (0, 0, 0), draw)
+    canvas.fill_rects(n_channels, (255, 255, 255), draw)
+    canvas.fill_rects(p_channels, (255, 255, 255), draw)
+    count = 0
+    for pixel in im.getdata():
+        if pixel == (0, 0, 0):
+            count += 1
+    canvas.draw_border(border_rect, draw)
+    im.rotate(180).transpose(Image.Transpose.FLIP_LEFT_RIGHT).save("images/usefil_legirovanie.jpg", quality=95)
+    return count
+
+
+def useful_metal_square(width, height, border_rect, rects, n_transistors, p_transistors):
+
+    im = Image.new("RGB", (width, height), (255, 255, 255))
+    draw = ImageDraw.Draw(im, "RGB")
+    canvas.fill_rects(rects["M1"], (0, 0, 0), draw)
+    canvas.fill_rects(rects["M2"], (0, 0, 0), draw)
+    canvas.fill_rects(rects["SI"], (255, 255, 255), draw)
+    canvas.fill_rects(rects["SP"], (255, 255, 255), draw)
+    canvas.fill_rects(rects["SN"], (255, 255, 255), draw)
+    canvas.fill_rects(n_transistors, (255, 255, 255), draw)
+    canvas.fill_rects(p_transistors, (255, 255, 255), draw)
+    count = 0
+    for pixel in im.getdata():
+        if pixel == (0, 0, 0):
+            count += 1
+    canvas.draw_border(border_rect, draw)
+    im.rotate(180).transpose(Image.Transpose.FLIP_LEFT_RIGHT).save("images/useful_metal.jpg", quality=95)
+    return count
+
+
 def get_all_elements(adj_rects, border_rect):
     p_transistors, n_transistors, p_channels, n_channels = get_transistors(adj_rects)
     elements_dict = {
@@ -254,6 +307,24 @@ def get_all_squares(elements_dict, rects, width, height):
 
     square_of_blanks = square_of_borders - square_of_scheme
 
+    square_of_useful_si = useful_si_square(
+        width, height, elements_dict["BORDER_RECT"], rects, elements_dict["N_TRANSISTORS"], elements_dict["P_TRANSISTORS"]
+    )
+
+    square_of_useful_legirovanie = useful_legirovanie_square(
+        width,
+        height,
+        elements_dict["BORDER_RECT"],
+        elements_dict["N_CHANNELS"],
+        elements_dict["P_CHANNELS"],
+        elements_dict["N_TRANSISTORS"],
+        elements_dict["P_TRANSISTORS"],
+    )
+
+    square_of_useful_metal = useful_metal_square(
+        width, height, elements_dict["BORDER_RECT"], rects, elements_dict["N_TRANSISTORS"], elements_dict["P_TRANSISTORS"]
+    )
+
     squares_dict = {
         "n_trans": [square_of_n_trans, round(square_of_n_trans / square_of_borders * 100, 2)],
         "p_trans": [square_of_p_trans, round(square_of_p_trans / square_of_borders * 100, 2)],
@@ -268,6 +339,9 @@ def get_all_squares(elements_dict, rects, width, height):
         "scheme": [square_of_scheme, round(square_of_scheme / square_of_borders * 100, 2)],
         "borders": [square_of_borders, round(square_of_borders / square_of_borders * 100, 2)],
         "blanks": [square_of_blanks, round(square_of_blanks / square_of_borders * 100, 2)],
+        "useful_legirovanie": [square_of_useful_legirovanie, round(square_of_useful_legirovanie / square_of_borders * 100, 2)],
+        "useful_si": [square_of_useful_si, round(square_of_useful_si / square_of_borders * 100, 2)],
+        "useful_metal": [square_of_useful_metal, round(square_of_useful_metal / square_of_borders * 100, 2)],
     }
 
     return squares_dict
@@ -276,6 +350,15 @@ def get_all_squares(elements_dict, rects, width, height):
 def print_squares(squares_dict):
     for a in squares_dict:
         print("square of ", a, " = ", squares_dict[a][0], ", ", squares_dict[a][1], "%")
+
+
+def print_report(squares_dict):
+    print("============ REPORT =============")
+    print("legirovanie", " = ", squares_dict["useful_legirovanie"][0], ", ", squares_dict["useful_legirovanie"][1], "%")
+    print("channels", " = ", squares_dict["all_channels"][0], ", ", squares_dict["all_channels"][1], "%")
+    print("useful_si", " = ", squares_dict["useful_si"][0], ", ", squares_dict["useful_si"][1], "%")
+    print("useful_metal", " = ", squares_dict["useful_metal"][0], ", ", squares_dict["useful_metal"][1], "%")
+    print("blanks", " = ", squares_dict["blanks"][0], ", ", squares_dict["blanks"][1], "%")
 
 
 def show_picture(picture):
