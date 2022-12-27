@@ -28,16 +28,21 @@ elements_dict = utils.get_all_elements(adj_rects, border_rect)
 utils.print_all_elements(elements_dict)
 
 # расчет площадей (здесь параллельно создаются промежуточные картинки, которые сохраняются в папку images)
-squares_dict = utils.get_all_squares(elements_dict, adj_rects, width, height)
+squares_dict, report_dict = utils.get_all_squares(elements_dict, adj_rects, width, height)
 
 utils.print_squares(squares_dict)
 
-utils.print_report(squares_dict)
+utils.print_report(report_dict)
 
 # пока всё это считается, в центральной части окна крутится гифка
 # когда все рассчиталось, в центральной части окна появляется инфа о схеме, где можно нажать кнопку "Показать на картинке",
 # при нажатии на которую будет вызываться функция, соответствующая выбранному элементу из выпадающего списка, например:
-utils.show_picture("all_metal")
+utils.show_solution("all_metal")
+
+# это круговые диаграммы, их надо впихнуть на их место в интерфейсе
+# но пока что они просто показываются так же, как картинки
+utils.show_chart("all_metal")
+utils.show_report_chart()
 
 # ======================= ПО НАЖАТИЮ КНОПКИ "НАРИСОВАТЬ КАРТИНКУ" ======================
 
@@ -87,4 +92,4 @@ im = im.rotate(180).transpose(Image.Transpose.FLIP_LEFT_RIGHT)
 im.save("images/final.jpg", quality=95)
 
 # вывод финальной картиночки
-utils.show_picture("final")
+utils.show_final_picture()
