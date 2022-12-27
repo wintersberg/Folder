@@ -397,6 +397,11 @@ def print_squares(squares_dict):
         print("square of ", a, " = ", squares_dict[a][0], ", ", squares_dict[a][1], "%")
 
 
+def print_square(element, squares_dict):
+    print("============ SQUARE =============")
+    print("square of ", element, " = ", squares_dict[element][0], ", ", squares_dict[element][1], "%")
+
+
 def print_report(report_dict):
     print("============ REPORT =============")
     print("alloy", " = ", report_dict["useful_alloy"][0], ", ", report_dict["useful_alloy"][1], "%")

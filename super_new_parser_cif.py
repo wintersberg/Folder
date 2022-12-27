@@ -30,9 +30,11 @@ utils.print_all_elements(elements_dict)
 # расчет площадей (здесь параллельно создаются промежуточные картинки, которые сохраняются в папку images)
 squares_dict, report_dict = utils.get_all_squares(elements_dict, adj_rects, width, height)
 
+# вывод ВСЕГО в консольку
 utils.print_squares(squares_dict)
 
-utils.print_report(report_dict)
+# вывод площади одной хуйнюшки в консольку (пригодится для вывода процентов в центральную часть программы)
+utils.print_square("all_metal", squares_dict)
 
 # пока всё это считается, в центральной части окна крутится гифка
 # когда все рассчиталось, в центральной части окна появляется инфа о схеме, где можно нажать кнопку "Показать на картинке",
@@ -42,6 +44,8 @@ utils.show_solution("all_metal")
 # это круговые диаграммы, их надо впихнуть на их место в интерфейсе
 # но пока что они просто показываются так же, как картинки
 utils.show_chart("all_metal")
+
+utils.print_report(report_dict)
 utils.show_report_chart()
 
 # ======================= ПО НАЖАТИЮ КНОПКИ "НАРИСОВАТЬ КАРТИНКУ" ======================
